@@ -16,6 +16,7 @@ var app = (function () {
     }
 
     var stompClient = null;
+    var can = document.getElementById("canvas");
 
     var addPointToCanvas = function (point) {
         var canvas = document.getElementById("canvas");
@@ -29,7 +30,7 @@ var app = (function () {
 
     var sendPoint = function (pt) {
         console.log(pt);
-        stompClient.send("/topic/newpoint", {}, JSON.stringify({'x': parseInt($("#x").val()), 'y': parseInt($("#y").val())}));
+        stompClient.send("/topic/newpoint." + $("#drawId"), {}, JSON.stringify({'x': parseInt($("#x").val()), 'y': parseInt($("#y").val())}));
         //stompClient.send("/topic/newpoint", {}, JSON.stringify({'x': pt.x,'y': pt.y}));
     };
 
@@ -51,7 +52,7 @@ var app = (function () {
         //subscribe to /topic/newpoint when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/newpoint', function (eventbody) {
+            stompClient.subscribe('/topic/newpoint.' + $("#drawId"), function (eventbody) {
                 //alert(eventbody);
                 console.log(eventbody);
                 var point = JSON.parse(eventbody.body);
@@ -72,10 +73,14 @@ var app = (function () {
 
     return {
 
-        init: function () {
+        /*init: function () {
             var can = document.getElementById("canvas");
 
             //websocket connection
+            connectAndSubscribe();
+        },*/
+        
+        connect : function () {
             connectAndSubscribe();
         },
 
