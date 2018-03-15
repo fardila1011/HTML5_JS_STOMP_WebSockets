@@ -33,7 +33,7 @@ public class STOMPMessagesHandler {
         System.out.println("Nuevo punto recibido en el servidor!:" + pt);
         msgt.convertAndSend("/topic/newpoint." + numdibujo, pt);
         synchronized (this) {
-            if (numPoints.incrementAndGet() >= 3) {
+            if (numPoints.incrementAndGet() >= 4) {
                 System.err.println("Send new points!");
                 msgt.convertAndSend("/topic/newpolygon." + numdibujo, points);
                 points.clear();
