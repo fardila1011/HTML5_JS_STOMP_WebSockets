@@ -4,7 +4,15 @@ var app = (function () {
         constructor(x,y){
             this.x=x;
             this.y=y;
-        }        
+        } 
+        
+        x() {
+            return this.x;
+        }
+        
+        y() {
+            return this.y;
+        }
     }
     
     var stompClient = null;
@@ -15,8 +23,15 @@ var app = (function () {
         ctx.beginPath();
         ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
         ctx.stroke();
+        console.log(Point);
+        sendPoint(Point);
     };
     
+    var sendPoint = function (pt) {
+        console.log(pt);
+        stompClient.send("/topic/newpoint", {}, JSON.stringify({'x': parseInt($("#x").val()),'y': parseInt($("#y").val())}));
+        //stompClient.send("/topic/newpoint", {}, JSON.stringify({'x': pt.x,'y': pt.y}));
+    };
     
     var getMousePosition = function (evt) {
         canvas = document.getElementById("canvas");
@@ -33,12 +48,16 @@ var app = (function () {
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
         
-        //subscribe to /topic/TOPICXX when connections succeed
+        //subscribe to /topic/newpoint when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
-                
-                
+            stompClient.subscribe('/topic/newpoint', function (eventbody) {
+                alert(eventbody);
+                console.log(eventbody);
+                var point = JSON.parse(eventbody.body);
+                console.log(point); 
+                var x = point.x;
+                var y = point.y;
             });
         });
 
